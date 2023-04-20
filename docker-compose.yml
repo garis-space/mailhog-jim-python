@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - ${MAILHOG_SMTP_PORT:-1025}:1025
+      - ${MAILHOG_UI_PORT:-8025}:8025
+    # Jim chaos monkey config (https://github.com/mailhog/MailHog/blob/v1.0.0/docs/JIM.md) - 20% of emails will be rejected
+    command: "-invite-jim \
+      -jim-accept=${MAILHOG_JIM_ACCEPT:-0.8} \
+      -jim-disconnect=${MAILHOG_JIM_DISCONNECT:-0.2} \
+      -jim-reject-sender=${MAILHOG_JIM_REJECT_SENDER:-0.2} \
+      -jim-reject-recipient=${MAILHOG_JIM_REJECT_RECIPIENT:-0.2} \
+      -jim-reject-auth=${MAILHOG_JIM_REJECT_AUTH:-0.2}"
